@@ -11,19 +11,17 @@ public class LoginPage {
 
     private WebDriver driver;
 
-    // 🔹 Локаторы элементов
+    //  Локаторы элементов, которые Selenium использует, чтобы найти определенные веб-элементы
     private final By usernameField = By.id("user-name");
     private final By passwordField = By.id("password");
     private final By loginButton = By.id("login-button");
     private final By errorContainer = By.xpath("//h3[@data-test='error']");
 
-    // 🔹 Конструктор
     public LoginPage(WebDriver driver) {
         this.driver = driver;
         driver.get("https://www.saucedemo.com/");
     }
 
-    // 🔹 Методы действий
     public void enterUsername(String username) {
         driver.findElement(usernameField).clear();
         driver.findElement(usernameField).sendKeys(username);
@@ -44,7 +42,6 @@ public class LoginPage {
         clickLoginButton();
     }
 
-    // 🔹 Получение текста ошибки
     public String getErrorMessage() {
         return driver.findElement(errorContainer).getText();
     }
