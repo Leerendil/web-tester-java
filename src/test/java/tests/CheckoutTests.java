@@ -6,6 +6,7 @@ import pages.LoginPage;
 import pages.InventoryPage;
 import pages.CartPage;
 import pages.CheckoutPage;
+import utils.ConfigReader;
 
 public class CheckoutTests extends BaseTest {
 
@@ -55,5 +56,25 @@ public class CheckoutTests extends BaseTest {
 
         Assertions.assertTrue(error.contains("Error: Postal Code is required"),
                 "Ожидалась ошибка о незаполненном поле Postal Code");
+    }
+
+    @Test
+    @DisplayName("Проверка корректности итоговой суммы")
+    public void checkTotalPriceTest() {
+        // Добавляем второй товар для проверки суммирования
+        driver.get(ConfigReader.getBaseUrl() + "inventory.html");
+        inventoryPage.addFirstProductToCart();
+
+        driver.get(ConfigReader.getBaseUrl() + "cart.html");
+        cartPage.clickCheckout();
+
+        checkoutPage.fillInformation("Alex", "Ivanov", "12345");
+        checkoutPage.clickContinue();
+
+        // Проверяем, что итоговая сумма больше 0
+        double total = checkoutPage.getTotalPrice();
+        Assertions.assertTrue(total > 0, "Итоговая сумма должна быть больше 0");
+
+        System.out.println("💰 Итоговая сумма заказа: $" + total);
     }
 }

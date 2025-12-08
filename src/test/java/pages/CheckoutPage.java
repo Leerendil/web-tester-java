@@ -19,6 +19,7 @@ public class CheckoutPage {
     private By finishButton = By.id("finish");
     private By errorMessage = By.xpath("//h3[@data-test='error']");
     private By completeHeader = By.className("complete-header");
+    private By totalPrice = By.className("summary_total_label");
 
     public CheckoutPage(WebDriver driver) {
         this.driver = driver;
@@ -31,6 +32,13 @@ public class CheckoutPage {
 
         driver.findElement(lastNameField).sendKeys(lastName);
         driver.findElement(postalCodeField).sendKeys(postalCode);
+    }
+
+    public double getTotalPrice() {
+        String priceText = driver.findElement(totalPrice).getText();
+        // Извлекаем число из строки "Total: $29.99"
+        String numericValue = priceText.replaceAll("[^0-9.]", "");
+        return Double.parseDouble(numericValue);
     }
 
     public void clickContinue() {
