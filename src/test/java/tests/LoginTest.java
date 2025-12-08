@@ -1,14 +1,9 @@
 package tests;
 
 import base.BaseTest;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import pages.LoginPage;
 
-import java.io.File;
 
 public class LoginTest extends BaseTest {
 
@@ -33,7 +28,6 @@ public class LoginTest extends BaseTest {
     public void successfulLoginTest() {
         loginPage.login("standard_user", "secret_sauce");
 
-        // Проверяем, что мы перешли на страницу каталога
         String currentUrl = driver.getCurrentUrl();
         Assertions.assertTrue(currentUrl.contains("inventory.html"),
                 "Ожидалась страница каталога после успешного входа");
@@ -45,7 +39,6 @@ public class LoginTest extends BaseTest {
     public void invalidCredentialsTest() {
         loginPage.login("wrong_user", "wrong_password");
 
-        // Проверяем наличие ошибки
         String error = loginPage.getErrorMessage();
         Assertions.assertTrue(error.contains("Username and password do not match"),
                 "Ожидалось сообщение о неверных данных");
@@ -65,7 +58,7 @@ public class LoginTest extends BaseTest {
     @Test
     @DisplayName("Ошибка при пустых полях формы логина")
     public void emptyFieldsTest() {
-        loginPage.login("", ""); // Пустые поля
+        loginPage.login("", "");
         String errorText = loginPage.getErrorMessage();
         Assertions.assertTrue(errorText.contains("Username is required"),
                 "Сообщение об обязательности логина отсутствует");
