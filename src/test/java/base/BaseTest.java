@@ -6,7 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import utils.ConfigReader;
+
 import java.io.File;
+import java.time.Duration;
 
 /**
  * Базовый класс для всех тестов.
@@ -18,24 +21,27 @@ public class BaseTest {
 
     @BeforeEach
     public void setUp() {
-        // Настройка WebDriverManager
-        WebDriverManager.chromedriver().browserVersion("130").setup();
+        WebDriverManager.chromedriver()
+                .browserVersion(ConfigReader.getProperty("browser.version"))
+                .setup();
 
-        // Настройки для Thorium браузера
         ChromeOptions options = new ChromeOptions();
-        String thoriumPath = "/Applications/Thorium.app/Contents/MacOS/Thorium";
-        File thoriumBinary = new File(thoriumPath);
+        String browserPath = ConfigReader.getBrowserPath();
+        File browserBinary = new File(browserPath);
 
-        if (thoriumBinary.exists()) {
-            options.setBinary(thoriumPath);
+        if (browserBinary.exists()) {
+            options.setBinary(browserPath);
         } else {
-            System.err.println("⚠Thorium не найден по пути: " + thoriumPath);
-            System.err.println("Проверьте путь к браузеру!");
+            System.out.println("⚠️ Браузер не найден по пути: " + browserPath);
+            System.out.println("Используется Chrome по умолчанию");
         }
 
-        // Запуск браузера
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
+
+        // Настройка таймаутов из конфигурации
+        int implicitTimeout = Integer.parseInt(ConfigReader.getProperty("timeout.implicit"));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(implicitTimeout));
 
         System.out.println("✅ Драйвер успешно запущен");
     }

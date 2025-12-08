@@ -21,7 +21,7 @@ public class CheckoutTests extends BaseTest {
         cartPage = new CartPage(driver);
         checkoutPage = new CheckoutPage(driver);
 
-        // 1️⃣ Логинимся и добавляем товар
+        // Логинимся и добавляем товар
         loginPage.login("standard_user", "secret_sauce");
         inventoryPage.addFirstProductToCart();
         driver.get("https://www.saucedemo.com/cart.html");
@@ -30,7 +30,7 @@ public class CheckoutTests extends BaseTest {
                 "Не удалось попасть на страницу Checkout Step One");
     }
 
-    // 1️⃣ Тест: успешное оформление заказа
+    // Успешное оформление заказа
     @Test
     @DisplayName("Полное оформление заказа")
     public void completePurchaseFlowTest() {
@@ -43,7 +43,7 @@ public class CheckoutTests extends BaseTest {
         System.out.println("✅ Заказ успешно оформлен!");
     }
 
-    // 2️⃣ Тест: пропуск обязательного поля
+    // Пропуск обязательного поля
     @Test
     @DisplayName("Ошибка при пропуске Postal Code")
     public void checkoutMissingInfoTest() {

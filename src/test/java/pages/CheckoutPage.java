@@ -12,7 +12,6 @@ public class CheckoutPage {
     private WebDriver driver;
     private WebDriverWait wait;
 
-    // ---------- Локаторы ----------
     private By firstNameField = By.id("first-name");
     private By lastNameField = By.id("last-name");
     private By postalCodeField = By.id("postal-code");
@@ -21,13 +20,10 @@ public class CheckoutPage {
     private By errorMessage = By.xpath("//h3[@data-test='error']");
     private By completeHeader = By.className("complete-header");
 
-    // ---------- Конструктор ----------
     public CheckoutPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
-
-    // ---------- Методы ----------
 
     public void fillInformation(String firstName, String lastName, String postalCode) {
         WebElement firstNameEl = wait.until(ExpectedConditions.visibilityOfElementLocated(firstNameField));
