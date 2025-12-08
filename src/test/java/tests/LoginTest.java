@@ -2,6 +2,8 @@ package tests;
 
 import base.BaseTest;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import pages.LoginPage;
 
 
@@ -62,6 +64,23 @@ public class LoginTest extends BaseTest {
         String errorText = loginPage.getErrorMessage();
         Assertions.assertTrue(errorText.contains("Username is required"),
                 "Сообщение об обязательности логина отсутствует");
+    }
+
+    @ParameterizedTest
+    @DisplayName("Проверка различных невалидных комбинаций логина/пароля")
+    @CsvSource({
+            "wrong_user, wrong_password, Username and password do not match",
+            "standard_user, wrong_password, Username and password do not match",
+            "wrong_user, secret_sauce, Username and password do not match",
+            "'', secret_sauce, Username is required",
+            "standard_user, '', Password is required"
+    })
+    public void invalidLoginCombinationsTest(String username, String password, String expectedError) {
+        loginPage.login(username, password);
+        String actualError = loginPage.getErrorMessage();
+
+        Assertions.assertTrue(actualError.contains(expectedError),
+                "Ожидалась ошибка содержащая: " + expectedError + ", но получена: " + actualError);
     }
 
 }

@@ -1,0 +1,63 @@
+package pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class CheckoutPage {
+
+    private WebDriver driver;
+    private WebDriverWait wait;
+
+    private By firstNameField = By.id("first-name");
+    private By lastNameField = By.id("last-name");
+    private By postalCodeField = By.id("postal-code");
+    private By continueButton = By.id("continue");
+    private By finishButton = By.id("finish");
+    private By errorMessage = By.xpath("//h3[@data-test='error']");
+    private By completeHeader = By.className("complete-header");
+    private By totalPrice = By.className("summary_total_label");
+
+    public CheckoutPage(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+    }
+
+    public void fillInformation(String firstName, String lastName, String postalCode) {
+        WebElement firstNameEl = wait.until(ExpectedConditions.visibilityOfElementLocated(firstNameField));
+        firstNameEl.sendKeys(firstName);
+
+        driver.findElement(lastNameField).sendKeys(lastName);
+        driver.findElement(postalCodeField).sendKeys(postalCode);
+    }
+
+    public double getTotalPrice() {
+        String priceText = driver.findElement(totalPrice).getText();
+        // Извлекаем число из строки "Total: $29.99"
+        String numericValue = priceText.replaceAll("[^0-9.]", "");
+        return Double.parseDouble(numericValue);
+    }
+
+    public void clickContinue() {
+        WebElement continueBtn = wait.until(ExpectedConditions.elementToBeClickable(continueButton));
+        continueBtn.click();
+    }
+
+    public void clickFinish() {
+        WebElement finishBtn = wait.until(ExpectedConditions.elementToBeClickable(finishButton));
+        finishBtn.click();
+    }
+
+    public String getErrorMessage() {
+        WebElement errorEl = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
+        return errorEl.getText();
+    }
+
+    public boolean isOrderComplete() {
+        WebElement header = wait.until(ExpectedConditions.visibilityOfElementLocated(completeHeader));
+        return header.getText().contains("Thank you for your order!");
+    }
+}
