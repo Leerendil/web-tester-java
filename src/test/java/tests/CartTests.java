@@ -2,9 +2,14 @@ package tests;
 
 import base.BaseTest;
 import org.junit.jupiter.api.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.LoginPage;
 import pages.InventoryPage;
 import pages.CartPage;
+import utils.ConfigReader;
+
+import java.time.Duration;
 
 public class CartTests extends BaseTest {
 
@@ -20,6 +25,10 @@ public class CartTests extends BaseTest {
 
         // Логинимся перед тестами
         loginPage.login("standard_user", "secret_sauce");
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.urlContains("inventory.html"));
+
         Assertions.assertTrue(driver.getCurrentUrl().contains("inventory.html"),
                 "Не удалось войти и попасть на страницу каталога");
     }
@@ -29,7 +38,8 @@ public class CartTests extends BaseTest {
     @DisplayName("Переход в корзину после добавления товара")
     public void goToCartAfterAddingProduct() {
         inventoryPage.addFirstProductToCart();
-        driver.get("https://www.saucedemo.com/cart.html");
+        // Переходим на /cart, а не на /cart.html
+        driver.get(ConfigReader.getBaseUrl() + "cart");
 
         Assertions.assertTrue(cartPage.isAtCartPage(), "Не удалось попасть на страницу корзины");
         Assertions.assertEquals(1, cartPage.getCartItemCount(), "В корзине должен быть 1 товар");
@@ -40,7 +50,7 @@ public class CartTests extends BaseTest {
     @DisplayName("Удаление товара в корзине")
     public void removeItemFromCart() {
         inventoryPage.addFirstProductToCart();
-        driver.get("https://www.saucedemo.com/cart.html");
+        driver.get(ConfigReader.getBaseUrl() + "cart");
 
         cartPage.removeFirstItem();
         Assertions.assertEquals(0, cartPage.getCartItemCount(), "Корзина должна быть пустой после удаления");
@@ -51,10 +61,10 @@ public class CartTests extends BaseTest {
     @DisplayName("Переход на страницу Checkout")
     public void proceedToCheckoutTest() {
         inventoryPage.addFirstProductToCart();
-        driver.get("https://www.saucedemo.com/cart.html");
+        driver.get(ConfigReader.getBaseUrl() + "cart");
 
         cartPage.clickCheckout();
-        Assertions.assertTrue(driver.getCurrentUrl().contains("checkout-step-one.html"),
+        Assertions.assertTrue(driver.getCurrentUrl().contains("checkout-step-one"),
                 "Переход на страницу оформления заказа не произошёл");
     }
 }

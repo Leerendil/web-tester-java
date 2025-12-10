@@ -1,11 +1,16 @@
 package tests;
 
 import base.BaseTest;
-import org.junit.jupiter.api.*;
-import pages.LoginPage;
-import pages.InventoryPage;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import pages.CartPage;
 import pages.CheckoutPage;
+import pages.InventoryPage;
+import pages.LoginPage;
+import utils.ConfigReader;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PriceTests extends BaseTest {
 
@@ -21,25 +26,36 @@ public class PriceTests extends BaseTest {
         cartPage = new CartPage(driver);
         checkoutPage = new CheckoutPage(driver);
 
-        loginPage.login("standard_user", "secret_sauce");
-        Assertions.assertTrue(driver.getCurrentUrl().contains("inventory.html"),
+        loginPage.login(ConfigReader.getStandardUser(), ConfigReader.getPassword());
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Проверяем успешный логин
+        assertTrue(inventoryPage.isAtInventoryPage(),
                 "Не удалось войти и попасть на страницу каталога");
     }
 
     @Test
-    @DisplayName("Проверка корректности итоговой суммы с одним товаром")
+    @DisplayName("Проверка итоговой цены за один товар")
     public void checkSingleItemTotalPriceTest() {
         inventoryPage.addFirstProductToCart();
 
-        driver.get("https://www.saucedemo.com/cart.html");
+        driver.get(ConfigReader.getBaseUrl() + "cart");
+        assertTrue(cartPage.isAtCartPage(), "Не удалось попасть в корзину");
+
         cartPage.clickCheckout();
 
-        checkoutPage.fillInformation("Alex", "Ivanov", "12345");
+        checkoutPage.fillInformation("John", "Doe", "12345");
         checkoutPage.clickContinue();
 
-        double total = checkoutPage.getTotalPrice();
-        Assertions.assertTrue(total > 0, "Итоговая сумма должна быть больше 0");
+        // Получаем итоговую цену
+        double totalPrice = checkoutPage.getTotalPrice();
 
-        System.out.println("💰 Итоговая сумма заказа (1 товар): $" + total);
+        assertTrue(totalPrice > 30 && totalPrice < 35,
+                "Итоговая цена должна быть около $32.39, получено: $" + totalPrice);
     }
 }
