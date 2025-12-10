@@ -19,14 +19,14 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>4.25.0</version>
+            <version>4.27.0</version>
         </dependency>
 
         <!-- WebDriverManager (для автонастройки драйверов) -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>5.9.0</version>
+            <version>6.1.0</version>
         </dependency>
 
         <!-- JUnit 5 -->

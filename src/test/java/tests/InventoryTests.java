@@ -1,57 +1,70 @@
 package tests;
 
 import base.BaseTest;
-import org.junit.jupiter.api.*;
-import pages.LoginPage;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import pages.CartPage;
 import pages.InventoryPage;
+import pages.LoginPage;
+import utils.ConfigReader;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InventoryTests extends BaseTest {
 
     private LoginPage loginPage;
     private InventoryPage inventoryPage;
+    private CartPage cartPage;
 
     @BeforeEach
     public void initPages() {
         loginPage = new LoginPage(driver);
         inventoryPage = new InventoryPage(driver);
+        cartPage = new CartPage(driver);
 
-        // Логинимся перед каждым тестом, чтобы попасть в каталог
-        loginPage.login("standard_user", "secret_sauce");
-        Assertions.assertEquals("https://www.saucedemo.com/inventory.html", driver.getCurrentUrl(),
-                "Не удалось перейти на страницу каталога после логина");
+        loginPage.login(ConfigReader.getStandardUser(), ConfigReader.getPassword());
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        assertTrue(inventoryPage.isAtInventoryPage(),
+                "Не удалось перейти на страницу каталога");
     }
 
-    // Добавление товара
     @Test
     @DisplayName("Добавление товара в корзину")
     public void addProductToCartTest() {
         inventoryPage.addFirstProductToCart();
-        int count = inventoryPage.getCartItemCount();
-        System.out.println("Количество товаров в корзине: " + count);
-        Assertions.assertEquals(1, count, "После добавления товара в корзине должно быть 1 изделие");
+
+        int cartCount = inventoryPage.getCartItemCount();
+        assertEquals(1, cartCount, "В корзине должен быть 1 товар");
     }
 
-    // Удаление товара
     @Test
-    @DisplayName("Удаление товара из корзины")
+    @DisplayName("Удаление товара из корзины на странице инвентаря")
     public void removeProductFromCartTest() {
         inventoryPage.addFirstProductToCart();
+        assertEquals(1, inventoryPage.getCartItemCount(),
+                "В корзине должен быть 1 товар");
+
         inventoryPage.removeFirstProductFromCart();
-        int count = inventoryPage.getCartItemCount();
-        System.out.println("Количество товаров в корзине после удаления: " + count);
-        Assertions.assertEquals(0, count, "После удаления корзина должна быть пустой");
+
+        assertEquals(0, inventoryPage.getCartItemCount(),
+                "После удаления корзина должна быть пустой");
     }
 
-    // Проверка сортировки
     @Test
-    @DisplayName("Сортировка товаров (A-Z)")
+    @DisplayName("Сортировка товаров по имени (A to Z)")
     public void inventorySortingTest() {
-        // Выполняем сортировку по имени (A-Z)
         inventoryPage.sortProducts("Name (A to Z)");
-        String firstItemName = inventoryPage.getFirstProductName();
-        System.out.println("Первый товар после сортировки A-Z: " + firstItemName);
 
-        Assertions.assertEquals("Sauce Labs Backpack", firstItemName,
-                "Сортировка по имени A-Z не работает корректно");
+        String firstProductName = inventoryPage.getFirstProductName();
+
+        assertEquals("Sauce Labs Backpack", firstProductName,
+                "После сортировки A-Z первым должен быть Sauce Labs Backpack");
     }
 }
